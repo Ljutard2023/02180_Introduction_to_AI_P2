@@ -6,15 +6,15 @@ def evaluate_feedback(secret_code: tuple, guess: tuple) -> tuple:
     Compares guess to secret_code. 
     Returns (black_pegs, white_pegs).
     """
-    # 1. Black pegs: correct color and position.
+    # Black pegs: correct color and position
     blacks = sum(1 for s, g in zip(secret_code, guess) if s == g)
     
-    # 2. Total color matches (ignoring position).
+    # Total color matches (ignoring position)
     secret_counts = {c: secret_code.count(c) for c in set(secret_code)}
     guess_counts = {c: guess.count(c) for c in set(guess)}
     total_color_matches = sum(min(secret_counts.get(c, 0), guess_counts.get(c, 0)) for c in set(guess))
     
-    # 3. White pegs: total color matches minus black pegs.
+    # White pegs: total color matches minus black pegs
     whites = total_color_matches - blacks
     
     return (blacks, whites)
@@ -45,10 +45,10 @@ class PlausibilityOrder:
         """
         for world in self.order:
             if evaluate_feedback(world, guess) == actual_feedback:
-                # World is consistent with feedback; keep current rank.
+                # World is consistent with feedback, keep current rank
                 pass
             else:
-                # World contradicts feedback; massive penalty applied.
+                # World contradicts feedback; massive penalty applied
                 self.order[world] += 1000
 
 def minimax_guess(all_possible_worlds: list, plausible_worlds: list) -> tuple:
@@ -93,7 +93,7 @@ def minimax_guess(all_possible_worlds: list, plausible_worlds: list) -> tuple:
 # ============================================================
 if __name__ == "__main__":
     # Traditional Mastermind: 6 colors, 4 positions -> 1296 worlds
-    COLORS = ['Rouge', 'Bleu', 'Vert', 'Jaune', 'Orange', 'Violet']
+    COLORS = ['Red', 'Blue', 'Green', 'Yellow', 'Orange', 'Purple']
     POSITIONS = 4
     
     print("Initializing agent (Creating universe W)...")
@@ -121,17 +121,17 @@ if __name__ == "__main__":
         current_guess = minimax_guess(all_worlds, plausible_worlds)
         print(f" -> Agent proposes: {current_guess}")
         
-        # 2. Game evaluates and returns feedback
+        # Game evaluates and returns feedback
         feedback = evaluate_feedback(secret_code, current_guess)
         print(f" -> Game feedback: {feedback[0]} Black, {feedback[1]} White")
         
-        # 3. Win condition
+        # Win condition
         if feedback[0] == POSITIONS:
             print(f"\nSUCCESS! Agent cracked the code in {attempt} attempts.")
             game_won = True
             break
             
-        # 4. Agent revises its belief base
+        # Agent revises its belief base
         print(" -> Agent revising plausibility order...\n")
         agent_beliefs.revise(current_guess, feedback)
         
