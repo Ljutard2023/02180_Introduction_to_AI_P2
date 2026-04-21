@@ -6,11 +6,12 @@ This repository implements a dual-architecture Belief Revision Engine, satisfyin
 1. **Sections 1-3:** A syntactic engine handling propositional logic inference, partial meet contraction, and Levi Identity revision, strictly validated against the AGM postulates.
 2. **Section 4 (Extension):** A semantic engine implementing belief revision over plausibility orders to solve the Mastermind game, bypassing the combinatorial explosion of CNF conversions.
 
+## Naive Approach
+
 The resolution algorithm by refutation seeks to prove $KB \models \alpha$ by demonstrating that the set $S = KB \cup \{\neg \alpha\}$ is unsatisfiable.
 
 Let $\Delta$ be the set of clauses derived from the belief base $KB$, and $\Gamma$ be the set of clauses derived from $\neg \alpha$. The initial set is therefore $S_0 = \Delta \cup \Gamma$.
 
-## Naive Approach
 In the brute-force implementation, the algorithm generates the deductive closure of $S_0$ by exhaustively evaluating all possible pairs $(C_i, C_j) \in S_0 \times S_0$.
 * If the knowledge base $\Delta$ contains $n$ clauses, the very first pass of the loop performs $\frac{n(n-1)}{2}$ comparisons purely within $\Delta$.
 * With each iteration, the set grows quadratically, generating redundant clauses or tautologies that have absolutely no relevance to refuting $\alpha$. This results in an undirected combinatorial explosion.
