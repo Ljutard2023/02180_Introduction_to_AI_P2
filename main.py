@@ -42,23 +42,45 @@ def run_agm_validation():
     print("\n" + "=" * 60)
     print(" PART 2: AGM POSTULATES VALIDATION")
     print("=" * 60)
-    
+
     P = Atom("P")
     Q = Atom("Q")
-    kb = BeliefBase()
-    kb.add(P >> Q, priority=2)
-    kb.add(P, priority=1)
+    R = Atom("R")
+
+    # ── Revision postulates ──────────────────────────────────
+    # Scenario 1: KB entails ¬α — exercises Success, Inclusion,
+    # Consistency, Extensionality. Vacuity prints N/A (correct).
+    print("\n[2.1] Revision postulates — KB={P→Q, P}, α=¬Q")
+    kb1 = BeliefBase()
+    kb1.add(P >> Q, priority=2)
+    kb1.add(P, priority=1)
     alpha = Not(Q)
 
-    print("Running automated AGM tests...")
-    test_agm.test_agm_success(kb, alpha)
-    test_agm.test_agm_inclusion(kb, alpha)
-    test_agm.test_agm_vacuity(kb, alpha)
-    test_agm.test_agm_consistency(kb, alpha)
-    
+    test_agm.test_agm_success(kb1, alpha)
+    test_agm.test_agm_inclusion(kb1, alpha)
+    test_agm.test_agm_vacuity(kb1, alpha)       # N/A — KB entails Q
+    test_agm.test_agm_consistency(kb1, alpha)
+
     alpha_ext = Not(And(P, Q))
-    beta_ext = Atom("P") >> Not(Q) # Equivalent to Not(And(P, Q))
-    test_agm.test_agm_extensionality(kb, alpha_ext, beta_ext)
+    beta_ext  = Atom("P") >> Not(Q)             # Equivalent to ¬(P∧Q)
+    test_agm.test_agm_extensionality(kb1, alpha_ext, beta_ext)
+
+    # Scenario 2: KB does NOT entail ¬α — Vacuity fires.
+    # KB={R} has no conflict with P, so K*P = K+P.
+    print("\n[2.2] Revision postulates — KB={R}, α=P (Vacuity fires)")
+    kb2 = BeliefBase()
+    kb2.add(R, priority=1)
+    test_agm.test_agm_vacuity(kb2, P)
+
+    # ── Contraction postulates ───────────────────────────────
+    print("\n[2.3] Contraction postulates — KB={P→Q, P}, α=Q")
+    kb3 = BeliefBase()
+    kb3.add(P >> Q, priority=2)
+    kb3.add(P, priority=1)
+
+    test_agm.test_contraction_success(kb3, Q)   # KB÷Q should not entail Q
+    test_agm.test_contraction_inclusion(kb3, Q) # KB÷Q ⊆ KB
+    test_agm.test_contraction_vacuity(kb3, R)   # KB÷R = KB (R not entailed)
 
 def run_semantic_pipeline():
     print("\n" + "=" * 60)

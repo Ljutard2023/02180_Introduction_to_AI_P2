@@ -5,6 +5,7 @@
 from formulas import Atom, BeliefBase, Not, And, Or
 from resolution import entails, is_consistent
 from expansion import expand, revise
+from contraction import contract
 
 def test_agm_success(kb: BeliefBase, alpha):
     """Success Postulate: α ∈ K * α."""
@@ -28,15 +29,18 @@ def test_agm_inclusion(kb: BeliefBase, alpha):
     assert inclusion, "Inclusion postulate failed."
 
 def test_agm_vacuity(kb: BeliefBase, alpha):
-    """Vacuity Postulate: If ¬α ∉ K, then K * α ≡ K + α."""
+    """Vacuity Postulate: If ¬α ∉ K, then K * α ≡ K + α.
+
+    This postulate only fires when KB does NOT entail ¬α.
+    It verifies that revision is identical to simple expansion
+    when there is no conflict to resolve.
+    """
     neg_alpha = Not(alpha)
     
-    # If KB does not entail ¬α (α is consistent with KB)
     if not entails(kb, neg_alpha):
         revised_kb = revise(kb, alpha)
         expanded_kb = expand(kb, alpha)
         
-        # Cross logical equivalence check
         eq1 = all(entails(revised_kb, f) for f in expanded_kb.get_formulas())
         eq2 = all(entails(expanded_kb, f) for f in revised_kb.get_formulas())
         
@@ -44,7 +48,7 @@ def test_agm_vacuity(kb: BeliefBase, alpha):
         print(f"  [Vacuity] K * α ≡ K + α: {vacuity}")
         assert vacuity, "Vacuity postulate failed."
     else:
-        print("  [Vacuity] N/A (¬α is entailed by K).")
+        print("  [Vacuity] N/A (¬α is entailed by K — use a non-conflicting KB to exercise this).")
 
 def test_agm_consistency(kb: BeliefBase, alpha):
     """Consistency Postulate: If α is consistent, K * α is consistent."""
@@ -70,7 +74,6 @@ def test_agm_extensionality(kb: BeliefBase, alpha, beta):
         revised_a = revise(kb, alpha)
         revised_b = revise(kb, beta)
         
-        # Cross logical equivalence check
         eq1 = all(entails(revised_a, f) for f in revised_b.get_formulas())
         eq2 = all(entails(revised_b, f) for f in revised_a.get_formulas())
         
@@ -79,6 +82,32 @@ def test_agm_extensionality(kb: BeliefBase, alpha, beta):
         assert extensionality, "Extensionality postulate failed."
     else:
         print("  [Extensionality] N/A (α is not equivalent to β).")
+
+def test_contraction_success(kb: BeliefBase, alpha):
+    """Contraction Success: KB ÷ α should no longer entail α."""
+    contracted = contract(kb, alpha)
+    success = not entails(contracted, alpha)
+    print(f"  [Contraction Success] KB÷α ⊭ α: {success}")
+    assert success, "Contraction success postulate failed."
+
+def test_contraction_inclusion(kb: BeliefBase, alpha):
+    """Contraction Inclusion: KB ÷ α ⊆ KB (no beliefs are added)."""
+    contracted = contract(kb, alpha)
+    inclusion = all(entails(kb, f) for f in contracted.get_formulas())
+    print(f"  [Contraction Inclusion] KB÷α ⊆ KB: {inclusion}")
+    assert inclusion, "Contraction inclusion postulate failed."
+
+def test_contraction_vacuity(kb: BeliefBase, alpha):
+    """Contraction Vacuity: If KB ⊭ α, then KB ÷ α = KB."""
+    if not entails(kb, alpha):
+        contracted = contract(kb, alpha)
+        eq1 = all(entails(kb, f) for f in contracted.get_formulas())
+        eq2 = all(entails(contracted, f) for f in kb.get_formulas())
+        vacuity = eq1 and eq2
+        print(f"  [Contraction Vacuity] KB÷α = KB: {vacuity}")
+        assert vacuity, "Contraction vacuity postulate failed."
+    else:
+        print("  [Contraction Vacuity] N/A (KB already entails α).")
 
 # ============================================================
 #  TEST EXECUTION
@@ -91,20 +120,44 @@ if __name__ == "__main__":
 
     P = Atom("P")
     Q = Atom("Q")
+    R = Atom("R")
 
-    kb = BeliefBase()
-    kb.add(P >> Q, priority=2)
-    kb.add(P, priority=1)
-
-    print("\n--- Test with α = ¬Q ---")
+    # ── Scenario 1: Conflicting revision ────────────────────
+    # KB entails Q (via P and P→Q), alpha=¬Q creates conflict.
+    # Vacuity prints N/A here — that is correct behaviour.
+    print("\n--- Scenario 1: KB={P→Q, P}, α=¬Q (conflicting revision) ---")
+    kb1 = BeliefBase()
+    kb1.add(P >> Q, priority=2)
+    kb1.add(P, priority=1)
     alpha = Not(Q)
-    
-    test_agm_success(kb, alpha)
-    test_agm_inclusion(kb, alpha)
-    test_agm_vacuity(kb, alpha)
-    test_agm_consistency(kb, alpha)
-    
-    print("\n--- Extensionality Test with α = ¬(P ∧ Q) and β = ¬P ∨ ¬Q ---")
+
+    test_agm_success(kb1, alpha)
+    test_agm_inclusion(kb1, alpha)
+    test_agm_vacuity(kb1, alpha)       # N/A — KB entails Q = ¬(¬Q)
+    test_agm_consistency(kb1, alpha)
+
+    # ── Scenario 2: Non-conflicting revision ─────────────────
+    # KB={R} does not entail ¬P, so revising with P is vacuous:
+    # K*P should equal K+P (no contraction needed).
+    print("\n--- Scenario 2: KB={R}, α=P (non-conflicting — Vacuity fires) ---")
+    kb2 = BeliefBase()
+    kb2.add(R, priority=1)
+
+    test_agm_vacuity(kb2, P)           # Fires: K*P ≡ K+P
+
+    # ── Scenario 3: Extensionality ───────────────────────────
+    # ¬(P∧Q) ≡ ¬P∨¬Q ≡ P→¬Q — all three are equivalent.
+    print("\n--- Scenario 3: Extensionality — α=¬(P∧Q), β=P→¬Q ---")
     alpha_ext = Not(And(P, Q))
-    beta_ext = Or(Not(P), Not(Q))
-    test_agm_extensionality(kb, alpha_ext, beta_ext)
+    beta_ext  = P >> Not(Q)
+    test_agm_extensionality(kb1, alpha_ext, beta_ext)
+
+    # ── Scenario 4: Contraction postulates ───────────────────
+    print("\n--- Scenario 4: Contraction postulates ---")
+    kb3 = BeliefBase()
+    kb3.add(P >> Q, priority=2)
+    kb3.add(P, priority=1)
+
+    test_contraction_success(kb3, Q)    # KB÷Q should not entail Q
+    test_contraction_inclusion(kb3, Q)  # KB÷Q ⊆ KB
+    test_contraction_vacuity(kb3, R)    # KB doesn't entail R → KB÷R = KB
