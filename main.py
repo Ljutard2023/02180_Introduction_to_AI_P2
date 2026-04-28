@@ -52,8 +52,8 @@ def run_agm_validation():
     # Consistency, Extensionality. Vacuity prints N/A (correct).
     print("\n[2.1] Revision postulates — KB={P→Q, P}, α=¬Q")
     kb1 = BeliefBase()
-    kb1.add(P >> Q, priority=2)
-    kb1.add(P, priority=1)
+    kb1.add(P >> Q, priority=2, verbose=False)
+    kb1.add(P, priority=1, verbose=False)
     alpha = Not(Q)
 
     test_agm.test_agm_success(kb1, alpha)
@@ -69,14 +69,14 @@ def run_agm_validation():
     # KB={R} has no conflict with P, so K*P = K+P.
     print("\n[2.2] Revision postulates — KB={R}, α=P (Vacuity fires)")
     kb2 = BeliefBase()
-    kb2.add(R, priority=1)
+    kb2.add(R, priority=1, verbose=False)
     test_agm.test_agm_vacuity(kb2, P)
 
     # ── Contraction postulates ───────────────────────────────
     print("\n[2.3] Contraction postulates — KB={P→Q, P}, α=Q")
     kb3 = BeliefBase()
-    kb3.add(P >> Q, priority=2)
-    kb3.add(P, priority=1)
+    kb3.add(P >> Q, priority=2, verbose=False)
+    kb3.add(P, priority=1, verbose=False)
 
     test_agm.test_contraction_success(kb3, Q)   # KB÷Q should not entail Q
     test_agm.test_contraction_inclusion(kb3, Q) # KB÷Q ⊆ KB

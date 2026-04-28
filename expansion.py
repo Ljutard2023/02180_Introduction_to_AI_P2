@@ -6,7 +6,7 @@ from formulas import Formula, BeliefBase, Not, Atom
 from contraction import contract
 from resolution import is_consistent
 
-def expand(kb: BeliefBase, alpha: Formula, priority: int = None) -> BeliefBase:
+def expand(kb: BeliefBase, alpha: Formula, priority: int = None, verbose: bool = True) -> BeliefBase:
     """
     Blind expansion (KB + α).
     Adds α without checking for logical consistency.
@@ -18,37 +18,41 @@ def expand(kb: BeliefBase, alpha: Formula, priority: int = None) -> BeliefBase:
         This reflects that incoming information is more current
         than what was already believed.
       - If KB is empty, defaults to priority 1.
+
+    Set verbose=False to suppress all internal print output.
     """
     new_kb = BeliefBase()
     for p, f in kb.beliefs:
-        new_kb.add(f, priority=p)
+        new_kb.add(f, priority=p, verbose=False)
 
     if priority is None:
         priority = max((p for p, _ in kb.beliefs), default=0) + 1
 
-    new_kb.add(alpha, priority=priority)
+    new_kb.add(alpha, priority=priority, verbose=False)
     return new_kb
 
-def revise(kb: BeliefBase, alpha: Formula, priority: int = None) -> BeliefBase:
+def revise(kb: BeliefBase, alpha: Formula, priority: int = None, verbose: bool = True) -> BeliefBase:
     """
     Levi Identity revision (KB * α).
     Contracts by ¬α, then expands by α to guarantee consistency.
 
     The revised belief α receives the highest priority in the result
     (unless overridden), since it is the most recently accepted belief.
+
+    Set verbose=False to suppress all internal print output.
     """
-    print(f"\n{'='*50}")
-    print(f"  REVISION of KB by: {alpha}")
-    print(f"{'='*50}")
+    if verbose:
+        print(f"\n{'='*50}")
+        print(f"  REVISION of KB by: {alpha}")
+        print(f"{'='*50}")
+        print(f"\n  [Phase 1] Contracting by ¬({alpha}) to clear contradictions...")
 
-    negation_alpha = Not(alpha)
-    print(f"\n  [Phase 1] Contracting by ¬({alpha}) to clear contradictions...")
-    kb_contracted = contract(kb, negation_alpha)
+    kb_contracted = contract(kb, Not(alpha), verbose=verbose)
 
-    print(f"\n  [Phase 2] Expanding by {alpha} (highest priority)...")
-    new_kb = expand(kb_contracted, alpha, priority)
+    if verbose:
+        print(f"\n  [Phase 2] Expanding by {alpha} (highest priority)...")
 
-    return new_kb
+    return expand(kb_contracted, alpha, priority, verbose=False)
 
 # ============================================================
 # DEMONSTRATION

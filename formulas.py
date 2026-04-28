@@ -70,24 +70,27 @@ class BeliefBase:
     def __init__(self):
         self.beliefs = []
 
-    def add(self, formula: Formula, priority: int = 1):
+    def add(self, formula: Formula, priority: int = 1, verbose: bool = True):
         """Adds a prioritized formula."""
         for _, f in self.beliefs:
             if f == formula:
-                print(f"  [Info] {formula} is already in the base.")
+                if verbose:
+                    print(f"  [Info] {formula} is already in the base.")
                 return
         self.beliefs.append((priority, formula))
         self.beliefs.sort(key=lambda x: x[0], reverse=True)
-        print(f"  [+] Added: {formula} (priority {priority})")
+        if verbose:
+            print(f"  [+] Added: {formula} (priority {priority})")
 
-    def remove(self, formula: Formula):
+    def remove(self, formula: Formula, verbose: bool = True):
         """Removes a formula."""
         before = len(self.beliefs)
         self.beliefs = [(p, f) for (p, f) in self.beliefs if f != formula]
-        if len(self.beliefs) < before:
-            print(f"  [-] Removed: {formula}")
-        else:
-            print(f"  [Info] {formula} not found in base.")
+        if verbose:
+            if len(self.beliefs) < before:
+                print(f"  [-] Removed: {formula}")
+            else:
+                print(f"  [Info] {formula} not found in base.")
 
     def get_formulas(self):
         """Returns formulas without priorities."""

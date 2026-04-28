@@ -9,15 +9,15 @@ from contraction import contract
 
 def test_agm_success(kb: BeliefBase, alpha):
     """Success Postulate: α ∈ K * α."""
-    revised_kb = revise(kb, alpha)
+    revised_kb = revise(kb, alpha, verbose=False)
     success = entails(revised_kb, alpha)
     print(f"  [Success] K * α ⊨ α: {success}")
     assert success, "Success postulate failed."
 
 def test_agm_inclusion(kb: BeliefBase, alpha):
     """Inclusion Postulate: K * α ⊆ K + α."""
-    revised_kb = revise(kb, alpha)
-    expanded_kb = expand(kb, alpha)
+    revised_kb = revise(kb, alpha, verbose=False)
+    expanded_kb = expand(kb, alpha, verbose=False)
     
     inclusion = True
     for f in revised_kb.get_formulas():
@@ -38,8 +38,8 @@ def test_agm_vacuity(kb: BeliefBase, alpha):
     neg_alpha = Not(alpha)
     
     if not entails(kb, neg_alpha):
-        revised_kb = revise(kb, alpha)
-        expanded_kb = expand(kb, alpha)
+        revised_kb = revise(kb, alpha, verbose=False)
+        expanded_kb = expand(kb, alpha, verbose=False)
         
         eq1 = all(entails(revised_kb, f) for f in expanded_kb.get_formulas())
         eq2 = all(entails(expanded_kb, f) for f in revised_kb.get_formulas())
@@ -53,10 +53,10 @@ def test_agm_vacuity(kb: BeliefBase, alpha):
 def test_agm_consistency(kb: BeliefBase, alpha):
     """Consistency Postulate: If α is consistent, K * α is consistent."""
     temp_kb = BeliefBase()
-    temp_kb.add(alpha)
+    temp_kb.add(alpha, verbose=False)
     
     if is_consistent(temp_kb):
-        revised_kb = revise(kb, alpha)
+        revised_kb = revise(kb, alpha, verbose=False)
         consistency = is_consistent(revised_kb)
         print(f"  [Consistency] K * α is consistent: {consistency}")
         assert consistency, "Consistency postulate failed."
@@ -66,13 +66,13 @@ def test_agm_consistency(kb: BeliefBase, alpha):
 def test_agm_extensionality(kb: BeliefBase, alpha, beta):
     """Extensionality Postulate: If α ≡ β, then K * α ≡ K * β."""
     temp_kb_a = BeliefBase()
-    temp_kb_a.add(alpha)
+    temp_kb_a.add(alpha, verbose=False)
     temp_kb_b = BeliefBase()
-    temp_kb_b.add(beta)
+    temp_kb_b.add(beta, verbose=False)
     
     if entails(temp_kb_a, beta) and entails(temp_kb_b, alpha):
-        revised_a = revise(kb, alpha)
-        revised_b = revise(kb, beta)
+        revised_a = revise(kb, alpha, verbose=False)
+        revised_b = revise(kb, beta, verbose=False)
         
         eq1 = all(entails(revised_a, f) for f in revised_b.get_formulas())
         eq2 = all(entails(revised_b, f) for f in revised_a.get_formulas())
@@ -85,14 +85,14 @@ def test_agm_extensionality(kb: BeliefBase, alpha, beta):
 
 def test_contraction_success(kb: BeliefBase, alpha):
     """Contraction Success: KB ÷ α should no longer entail α."""
-    contracted = contract(kb, alpha)
+    contracted = contract(kb, alpha, verbose=False)
     success = not entails(contracted, alpha)
     print(f"  [Contraction Success] KB÷α ⊭ α: {success}")
     assert success, "Contraction success postulate failed."
 
 def test_contraction_inclusion(kb: BeliefBase, alpha):
     """Contraction Inclusion: KB ÷ α ⊆ KB (no beliefs are added)."""
-    contracted = contract(kb, alpha)
+    contracted = contract(kb, alpha, verbose=False)
     inclusion = all(entails(kb, f) for f in contracted.get_formulas())
     print(f"  [Contraction Inclusion] KB÷α ⊆ KB: {inclusion}")
     assert inclusion, "Contraction inclusion postulate failed."
@@ -100,7 +100,7 @@ def test_contraction_inclusion(kb: BeliefBase, alpha):
 def test_contraction_vacuity(kb: BeliefBase, alpha):
     """Contraction Vacuity: If KB ⊭ α, then KB ÷ α = KB."""
     if not entails(kb, alpha):
-        contracted = contract(kb, alpha)
+        contracted = contract(kb, alpha, verbose=False)
         eq1 = all(entails(kb, f) for f in contracted.get_formulas())
         eq2 = all(entails(contracted, f) for f in kb.get_formulas())
         vacuity = eq1 and eq2
@@ -127,8 +127,8 @@ if __name__ == "__main__":
     # Vacuity prints N/A here — that is correct behaviour.
     print("\n--- Scenario 1: KB={P→Q, P}, α=¬Q (conflicting revision) ---")
     kb1 = BeliefBase()
-    kb1.add(P >> Q, priority=2)
-    kb1.add(P, priority=1)
+    kb1.add(P >> Q, priority=2, verbose=False)
+    kb1.add(P, priority=1, verbose=False)
     alpha = Not(Q)
 
     test_agm_success(kb1, alpha)
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     # K*P should equal K+P (no contraction needed).
     print("\n--- Scenario 2: KB={R}, α=P (non-conflicting — Vacuity fires) ---")
     kb2 = BeliefBase()
-    kb2.add(R, priority=1)
+    kb2.add(R, priority=1, verbose=False)
 
     test_agm_vacuity(kb2, P)           # Fires: K*P ≡ K+P
 
@@ -155,8 +155,8 @@ if __name__ == "__main__":
     # ── Scenario 4: Contraction postulates ───────────────────
     print("\n--- Scenario 4: Contraction postulates ---")
     kb3 = BeliefBase()
-    kb3.add(P >> Q, priority=2)
-    kb3.add(P, priority=1)
+    kb3.add(P >> Q, priority=2, verbose=False)
+    kb3.add(P, priority=1, verbose=False)
 
     test_contraction_success(kb3, Q)    # KB÷Q should not entail Q
     test_contraction_inclusion(kb3, Q)  # KB÷Q ⊆ KB
