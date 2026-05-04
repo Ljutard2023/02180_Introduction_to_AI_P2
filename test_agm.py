@@ -28,10 +28,6 @@ def test_agm_inclusion(kb: BeliefBase, alpha):
 
 def test_agm_vacuity(kb: BeliefBase, alpha):
     """Vacuity Postulate: If ¬α ∉ K, then K * α ≡ K + α.
-
-    This postulate only fires when KB does NOT entail ¬α.
-    It verifies that revision is identical to simple expansion
-    when there is no conflict to resolve.
     """
     neg_alpha = Not(alpha)
     

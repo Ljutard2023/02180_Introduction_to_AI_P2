@@ -12,8 +12,6 @@ def expand(kb: BeliefBase, alpha: Formula, priority: int = None, verbose: bool =
       - If priority is given explicitly, use it.
       - Otherwise, assign max(existing priorities) + 1 so the
         newly accepted belief is the most entrenched in the base.
-        This reflects that incoming information is more current
-        than what was already believed.
       - If KB is empty, defaults to priority 1.
     """
     new_kb = BeliefBase()
@@ -30,8 +28,6 @@ def revise(kb: BeliefBase, alpha: Formula, priority: int = None, verbose: bool =
     """
     Levi Identity revision (KB * α).
     Contracts by ¬α, then expands by α to guarantee consistency.
-    The revised belief α receives the highest priority in the result
-    (unless overridden), since it is the most recently accepted belief.
     """
     if verbose:
         print(f"\n{'='*50}")
