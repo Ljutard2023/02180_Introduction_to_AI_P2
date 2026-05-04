@@ -1,6 +1,4 @@
-# ============================================================
-#  STEP A - Propositional Logic Formulas Representation
-# ============================================================
+#  Step A - Propositional Logic Formulas Representation
 
 class Formula:
     """Base class for all formulas."""
@@ -108,9 +106,7 @@ class BeliefBase:
         lines.append("}")
         return "\n".join(lines)
 
-# ============================================================
-# UTILITIES
-# ============================================================
+# Utilities
 
 def get_atoms(formula: Formula) -> set:
     """Returns all unique atomic variables in a formula."""
@@ -159,9 +155,7 @@ def is_contradiction(formula: Formula) -> bool:
     """Checks if a formula is false for all possible valuations."""
     return is_tautology(Not(formula))
 
-# ============================================================
-# DEMONSTRATION
-# ============================================================
+# Demonstration
 
 if __name__ == "__main__":
     print("=" * 50)

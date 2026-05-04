@@ -1,6 +1,4 @@
-# ============================================================
-#  STEP E - Belief Base Expansion and Revision
-# ============================================================
+#  Step E - Belief Base Expansion and Revision
 
 from formulas import Formula, BeliefBase, Not, Atom
 from contraction import contract
@@ -10,7 +8,6 @@ def expand(kb: BeliefBase, alpha: Formula, priority: int = None, verbose: bool =
     """
     Blind expansion (KB + α).
     Adds α without checking for logical consistency.
-
     Priority assignment:
       - If priority is given explicitly, use it.
       - Otherwise, assign max(existing priorities) + 1 so the
@@ -18,8 +15,6 @@ def expand(kb: BeliefBase, alpha: Formula, priority: int = None, verbose: bool =
         This reflects that incoming information is more current
         than what was already believed.
       - If KB is empty, defaults to priority 1.
-
-    Set verbose=False to suppress all internal print output.
     """
     new_kb = BeliefBase()
     for p, f in kb.beliefs:
@@ -35,11 +30,8 @@ def revise(kb: BeliefBase, alpha: Formula, priority: int = None, verbose: bool =
     """
     Levi Identity revision (KB * α).
     Contracts by ¬α, then expands by α to guarantee consistency.
-
     The revised belief α receives the highest priority in the result
     (unless overridden), since it is the most recently accepted belief.
-
-    Set verbose=False to suppress all internal print output.
     """
     if verbose:
         print(f"\n{'='*50}")
@@ -54,9 +46,7 @@ def revise(kb: BeliefBase, alpha: Formula, priority: int = None, verbose: bool =
 
     return expand(kb_contracted, alpha, priority, verbose=False)
 
-# ============================================================
-# DEMONSTRATION
-# ============================================================
+# Demonstration
 
 if __name__ == "__main__":
     print("=" * 55)

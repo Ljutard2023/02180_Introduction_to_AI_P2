@@ -88,9 +88,7 @@ def minimax_guess(all_possible_worlds: list, plausible_worlds: list) -> tuple:
 
     return best_guess
 
-# ============================================================
-#  AUTONOMOUS CONTROLLER (AI vs GAME)
-# ============================================================
+#  Autonomous controller (AI vs game)
 if __name__ == "__main__":
     # Traditional Mastermind: 6 colors, 4 positions -> 1296 worlds
     COLORS = ['Red', 'Blue', 'Green', 'Yellow', 'Orange', 'Purple']

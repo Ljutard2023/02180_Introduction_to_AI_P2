@@ -1,6 +1,4 @@
-# ============================================================
-#  STEP D - Belief Base Contraction (Optimized)
-# ============================================================
+#  Step D - Belief Base Contraction
 
 from formulas import Formula, BeliefBase
 from resolution import entails
@@ -41,9 +39,7 @@ def contract(kb: BeliefBase, alpha: Formula, verbose: bool = True) -> BeliefBase
         print(f"\n  Final remainder set: {[str(f) for f in surviving_kb.get_formulas()]}")
     return surviving_kb
 
-# ============================================================
-# DEMONSTRATION
-# ============================================================
+# Demonstration
 
 if __name__ == "__main__":
     from formulas import Atom

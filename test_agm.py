@@ -1,6 +1,4 @@
-# ============================================================
-#  AGM POSTULATES TESTS
-# ============================================================
+# AGM postulates test
 
 from formulas import Atom, BeliefBase, Not, And, Or
 from resolution import entails, is_consistent
@@ -109,9 +107,7 @@ def test_contraction_vacuity(kb: BeliefBase, alpha):
     else:
         print("  [Contraction Vacuity] N/A (KB already entails α).")
 
-# ============================================================
-#  TEST EXECUTION
-# ============================================================
+#  Test
 
 if __name__ == "__main__":
     print("=" * 55)
@@ -122,9 +118,8 @@ if __name__ == "__main__":
     Q = Atom("Q")
     R = Atom("R")
 
-    # ── Scenario 1: Conflicting revision ────────────────────
+    # Scenario 1: Conflicting revision
     # KB entails Q (via P and P→Q), alpha=¬Q creates conflict.
-    # Vacuity prints N/A here — that is correct behaviour.
     print("\n--- Scenario 1: KB={P→Q, P}, α=¬Q (conflicting revision) ---")
     kb1 = BeliefBase()
     kb1.add(P >> Q, priority=2, verbose=False)
@@ -133,31 +128,30 @@ if __name__ == "__main__":
 
     test_agm_success(kb1, alpha)
     test_agm_inclusion(kb1, alpha)
-    test_agm_vacuity(kb1, alpha)       # N/A — KB entails Q = ¬(¬Q)
+    test_agm_vacuity(kb1, alpha)  
     test_agm_consistency(kb1, alpha)
 
-    # ── Scenario 2: Non-conflicting revision ─────────────────
-    # KB={R} does not entail ¬P, so revising with P is vacuous:
-    # K*P should equal K+P (no contraction needed).
+    # Scenario 2: Non-conflicting revision
+    # KB={R} does not entail ¬P, so revising with P is vacuous: K*P should equal K+P 
     print("\n--- Scenario 2: KB={R}, α=P (non-conflicting — Vacuity fires) ---")
     kb2 = BeliefBase()
     kb2.add(R, priority=1, verbose=False)
 
-    test_agm_vacuity(kb2, P)           # Fires: K*P ≡ K+P
+    test_agm_vacuity(kb2, P)  
 
-    # ── Scenario 3: Extensionality ───────────────────────────
+    # Scenario 3: Extensionality
     # ¬(P∧Q) ≡ ¬P∨¬Q ≡ P→¬Q — all three are equivalent.
     print("\n--- Scenario 3: Extensionality — α=¬(P∧Q), β=P→¬Q ---")
     alpha_ext = Not(And(P, Q))
     beta_ext  = P >> Not(Q)
     test_agm_extensionality(kb1, alpha_ext, beta_ext)
 
-    # ── Scenario 4: Contraction postulates ───────────────────
+    # Scenario 4: Contraction postulates
     print("\n--- Scenario 4: Contraction postulates ---")
     kb3 = BeliefBase()
     kb3.add(P >> Q, priority=2, verbose=False)
     kb3.add(P, priority=1, verbose=False)
 
-    test_contraction_success(kb3, Q)    # KB÷Q should not entail Q
-    test_contraction_inclusion(kb3, Q)  # KB÷Q ⊆ KB
-    test_contraction_vacuity(kb3, R)    # KB doesn't entail R → KB÷R = KB
+    test_contraction_success(kb3, Q) 
+    test_contraction_inclusion(kb3, Q)
+    test_contraction_vacuity(kb3, R) 

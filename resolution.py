@@ -1,6 +1,4 @@
-# ============================================================
-#  STEP C - Resolution Algorithm (Optimized SoS + Subsumption)
-# ============================================================
+#  Step C - Resolution Algorithm
 
 from formulas import Formula, BeliefBase, Not
 from cnf import to_cnf
@@ -79,9 +77,7 @@ def is_consistent(kb: BeliefBase) -> bool:
         
     return not resolution_sos(set(), all_clauses)
 
-# ============================================================
-# DEMONSTRATION
-# ============================================================
+# Demonstration
 
 if __name__ == "__main__":
     from formulas import Atom

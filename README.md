@@ -1,10 +1,52 @@
 # Belief Revision Agent & Mastermind AI
-**02180 Introduction to AI - DTU SP25**
+**02180 Introduction to AI**
 
 ## Project Overview
 This repository implements a dual-architecture Belief Revision Engine, satisfying all requirements of the assignment. 
-1. **Sections 1-3:** A syntactic engine handling propositional logic inference, partial meet contraction, and Levi Identity revision, strictly validated against the AGM postulates.
+1. **Sections 1-3:** A syntactic engine handling propositional logic inference, greedy contraction based on epistemic entrenchment, and Levi Identity revision, strictly validated against the AGM postulates.
 2. **Section 4 (Extension):** A semantic engine implementing belief revision over plausibility orders to solve the Mastermind game, bypassing the combinatorial explosion of CNF conversions.
+
+## How to Run
+
+```bash
+python main.py      # Full scripted demo: syntactic pipeline, AGM validation, Mastermind
+python agent.py     # Interactive terminal: build and query a belief base manually
+python test_agm.py  # AGM postulate verification only
+python mastermind.py  # Standalone Mastermind game (6 colours, 4 positions)
+```
+
+## Interactive Terminal (agent.py)
+
+`agent.py` provides a menu-driven interface for interacting with the belief revision engine at runtime. This is the recommended entry point for testing with a custom knowledge base.
+
+```
+╔══════════════════════════════════════════════════╗
+║       BELIEF REVISION — Interactive Terminal     ║
+╠══════════════════════════════════════════════════╣
+║  0. Load example belief base                     ║
+║  1. Show belief base                             ║
+║  2. Contract          (KB ÷ α)                   ║
+║  3. Expand            (KB + α)                   ║
+║  4. Revise            (KB * α)                   ║
+║  5. Add belief                                   ║
+║  6. Remove belief                                ║
+║  7. Check entailment  (KB ⊨ α?)                  ║
+║  8. Check consistency                            ║
+║  9. Exit                                         ║
+╚══════════════════════════════════════════════════╝
+```
+
+**Formula syntax:**
+```
+P                  atom
+not P  or  ~P      negation
+P and Q            conjunction
+P or Q             disjunction
+P -> Q             implication
+(P -> Q) -> R      grouping with parentheses
+```
+
+Atom names can be any word.
 
 ## Mathematical Justification
 

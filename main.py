@@ -47,7 +47,7 @@ def run_agm_validation():
     Q = Atom("Q")
     R = Atom("R")
 
-    # ── Revision postulates ──────────────────────────────────
+    # Revision postulates
     # Scenario 1: KB entails ¬α — exercises Success, Inclusion,
     # Consistency, Extensionality. Vacuity prints N/A (correct).
     print("\n[2.1] Revision postulates — KB={P→Q, P}, α=¬Q")
@@ -58,11 +58,11 @@ def run_agm_validation():
 
     test_agm.test_agm_success(kb1, alpha)
     test_agm.test_agm_inclusion(kb1, alpha)
-    test_agm.test_agm_vacuity(kb1, alpha)       # N/A — KB entails Q
+    test_agm.test_agm_vacuity(kb1, alpha)
     test_agm.test_agm_consistency(kb1, alpha)
 
     alpha_ext = Not(And(P, Q))
-    beta_ext  = Atom("P") >> Not(Q)             # Equivalent to ¬(P∧Q)
+    beta_ext  = Atom("P") >> Not(Q)
     test_agm.test_agm_extensionality(kb1, alpha_ext, beta_ext)
 
     # Scenario 2: KB does NOT entail ¬α — Vacuity fires.
@@ -72,15 +72,15 @@ def run_agm_validation():
     kb2.add(R, priority=1, verbose=False)
     test_agm.test_agm_vacuity(kb2, P)
 
-    # ── Contraction postulates ───────────────────────────────
+    # Contraction postulates
     print("\n[2.3] Contraction postulates — KB={P→Q, P}, α=Q")
     kb3 = BeliefBase()
     kb3.add(P >> Q, priority=2, verbose=False)
     kb3.add(P, priority=1, verbose=False)
 
-    test_agm.test_contraction_success(kb3, Q)   # KB÷Q should not entail Q
-    test_agm.test_contraction_inclusion(kb3, Q) # KB÷Q ⊆ KB
-    test_agm.test_contraction_vacuity(kb3, R)   # KB÷R = KB (R not entailed)
+    test_agm.test_contraction_success(kb3, Q)
+    test_agm.test_contraction_inclusion(kb3, Q) 
+    test_agm.test_contraction_vacuity(kb3, R) 
 
 def run_semantic_pipeline():
     print("\n" + "=" * 60)

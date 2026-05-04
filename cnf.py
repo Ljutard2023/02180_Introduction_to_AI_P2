@@ -1,6 +1,4 @@
-# ============================================================
-#  STEP B - Conjunctive Normal Form (CNF) Conversion
-# ============================================================
+#  Step B - Conjunctive Normal Form Conversion
 
 from formulas import Atom, Not, And, Or, Implies, Formula
 
@@ -93,9 +91,7 @@ def cnf_to_str(clauses: set) -> str:
     clause_strs = sorted([clause_to_str(c) for c in clauses])
     return " ∧\n".join(clause_strs)
 
-# ============================================================
-# DEMONSTRATION
-# ============================================================
+# Demonstration
 
 if __name__ == "__main__":
     print("=" * 55)

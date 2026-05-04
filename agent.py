@@ -1,6 +1,3 @@
-# ============================================================
-#  CLI - Interactive Belief Revision Terminal
-# ============================================================
 
 from formulas import Atom, Not, And, Or, Implies, BeliefBase, Formula
 from resolution import entails, is_consistent
@@ -8,9 +5,7 @@ from contraction import contract
 from expansion import expand, revise
 
 
-# ============================================================
 #  FORMULA PARSER
-# ============================================================
 #
 #  Accepts plain English syntax:
 #    Atoms   : any uppercase or lowercase word, e.g. P, Q, Rain
@@ -19,15 +14,12 @@ from expansion import expand, revise
 #    Or      : "X or Y"
 #    Implies : "X -> Y"
 #    Grouping: parentheses, e.g. "(P -> Q) -> R"
-#
-#  Precedence (lowest to highest): -> , or , and , not , atom/parens
-#  This matches standard propositional logic convention.
 
 class ParseError(Exception):
     pass
 
 class _Tokenizer:
-    """Breaks an input string into a flat list of tokens."""
+    """Breaks an input string into a flat list."""
 
     def __init__(self, text: str):
         self.tokens = self._tokenize(text)
@@ -49,7 +41,6 @@ class _Tokenizer:
             elif text[i] == '~':
                 tokens.append('not'); i += 1
             else:
-                # Read a word (atom name or keyword)
                 j = i
                 while j < len(text) and (text[j].isalnum() or text[j] == '_'):
                     j += 1
@@ -80,7 +71,7 @@ def _parse_implies(t: _Tokenizer) -> Formula:
     left = _parse_or(t)
     if t.peek() == '->':
         t.consume('->')
-        right = _parse_implies(t)   # right-associative
+        right = _parse_implies(t)
         return Implies(left, right)
     return left
 
@@ -144,9 +135,7 @@ def parse_formula(text: str) -> Formula:
     return result
 
 
-# ============================================================
-#  DISPLAY HELPERS
-# ============================================================
+#  Display
 
 def _show_kb(kb: BeliefBase):
     if kb.is_empty():
@@ -158,10 +147,6 @@ def _show_kb(kb: BeliefBase):
 def _divider():
     print("  " + "-" * 48)
 
-
-# ============================================================
-#  MAIN CLI LOOP
-# ============================================================
 
 def run_cli():
     kb = BeliefBase()
@@ -196,11 +181,11 @@ def run_cli():
             print("\n  Exiting.")
             break
 
-        # ── Exit ────────────────────────────────────────────
+        # Exit
         if choice == '9':
             print("  Goodbye.")
             break
-        # ── Load weather domain KB ──────────────────────────
+        # Load weather domain KB
         elif choice == '0':
             print("  Loading weather domain knowledge base...")
             kb = BeliefBase()
@@ -216,12 +201,12 @@ def run_cli():
             print("    4 -> not Rain   (revise: it stopped raining)")
             _show_kb(kb)
 
-        # ── Show KB ─────────────────────────────────────────
+        # Show KB
         elif choice == '1':
             print()
             _show_kb(kb)
 
-        # ── Contract ─────────────────────────────────────────
+        # Contract
         elif choice == '2':
             try:
                 raw = input("  > Formula to contract by (KB ÷ α): ").strip()
@@ -232,7 +217,7 @@ def run_cli():
             except ParseError as e:
                 print(f"  [Parse error] {e}")
 
-        # ── Expand ───────────────────────────────────────────
+        # Expand
         elif choice == '3':
             try:
                 raw = input("  > Formula to expand with (KB + α): ").strip()
@@ -247,7 +232,7 @@ def run_cli():
             except ValueError:
                 print("  [Error] Priority must be an integer.")
 
-        # ── Revise ───────────────────────────────────────────
+        # Revise
         elif choice == '4':
             try:
                 raw = input("  > Formula to revise with (KB * α): ").strip()
@@ -262,7 +247,7 @@ def run_cli():
             except ValueError:
                 print("  [Error] Priority must be an integer.")
 
-        # ── Add belief ──────────────────────────────────────
+        # Add belief
         elif choice == '5':
             try:
                 raw = input("  > Formula to add: ").strip()
@@ -276,7 +261,7 @@ def run_cli():
             except ValueError:
                 print("  [Error] Priority must be an integer.")
 
-        # ── Remove belief ────────────────────────────────────
+        # Remove belief
         elif choice == '6':
             try:
                 raw = input("  > Formula to remove: ").strip()
@@ -290,7 +275,7 @@ def run_cli():
             except ParseError as e:
                 print(f"  [Parse error] {e}")
 
-        # ── Entailment ───────────────────────────────────────
+        # Entailment
         elif choice == '7':
             try:
                 raw = input("  > Formula to check (KB ⊨ α?): ").strip()
@@ -300,12 +285,12 @@ def run_cli():
             except ParseError as e:
                 print(f"  [Parse error] {e}")
 
-        # ── Consistency ──────────────────────────────────────
+        # Consistency
         elif choice == '8':
             result = is_consistent(kb)
             print(f"  KB is consistent: {result}")
 
-        # ── Unknown ──────────────────────────────────────────
+        # Unknown
         else:
             print("  Unknown option. Enter a number from 1 to 9.")
 
